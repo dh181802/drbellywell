@@ -18,7 +18,7 @@ const iotData = new AWS.IotData({ endpoint: "us-east-1:609746199304" });
 //const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 //const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'healthdata' })
 
-let puser, pname, pweight, ptime;
+let puser, pname, pweight, ptime, psession;
 
 
 
@@ -91,12 +91,16 @@ function createWeightAttributes(userWeight) {
     };
 }
 
+
+
+
 //stores username
 function setNameInSession(intent, session, callback) {
     const cardTitle = intent.name;
     const strName = intent.slots.strname;
     pname=strName.value;
     puser=session.user.userId;
+    psession=session.sessionId;
     let repromptText = '';
     let sessionAttributes = {};
     const shouldEndSession = false;
@@ -163,7 +167,8 @@ function newPatient(callback) {
             "id" : puser,
             "name" : pname,
             "weight" : pweight,
-            "time_stamp" : ptime
+            "time_stamp" : ptime,
+            "session_id" : psession
         },
         TableName : "healthdata"
     };
@@ -220,6 +225,38 @@ function diarrhea(intent, session, callback) {
          buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
 }
 
+//user can ask for the last weight input
+function getLastWeight(intent, session, callback) {
+    let lastWeight;
+    const repromptText = null;
+    const sessionAttributes = {};
+    let shouldEndSession = false;
+    let speechOutput = '';
+
+    if (session.attributes) {
+        lastWeight = session.attributes.weightValue;
+    }
+
+    if (lastWeight) {
+        speechOutput = `Your last weight was ${lastWeight}.`;
+        shouldEndSession = false;
+    } else {
+        speechOutput = "You did not input any weight yet.";
+    }
+    
+    
+    
+    
+    
+    
+    
+    // Setting repromptText to null signifies that we do not want to reprompt the user.
+    // If the user does not respond or says something that is not understood, the session
+    // will end.
+    callback(sessionAttributes,
+         buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
+}
+
 
 
 
@@ -232,6 +269,7 @@ function onSessionStarted(sessionStartedRequest, session) {
     console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, 
     
     =${session.userId}`);
+    
 }
 
 /**
@@ -264,7 +302,9 @@ function onIntent(intentRequest, session, callback) {
         setNameInSession(intent, session, callback);
     }  else if (intentName === 'WhatsMyNameIntent') {
         getNameFromSession(intent, session, callback);
-    } else if (intentName === 'diarrheaIntent') {
+    } else if (intentName === 'LastWeightIntent') {
+        getLastWeight(intent, session, callback);
+    } else if  (intentName === 'diarrheaIntent') {
         diarrhea(intent, session, callback);
     }   else if (intentName === 'AMAZON.HelpIntent') {
         getWelcomeResponse(callback);
