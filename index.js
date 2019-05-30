@@ -18,7 +18,7 @@ const iotData = new AWS.IotData({ endpoint: "us-east-1:609746199304" });
 //const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 //const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'healthdata' })
 
-var pname, pweight, ptime;
+let puser, pname, pweight, ptime;
 
 
 
@@ -96,6 +96,7 @@ function setNameInSession(intent, session, callback) {
     const cardTitle = intent.name;
     const strName = intent.slots.strname;
     pname=strName.value;
+    puser=session.user.userId;
     let repromptText = '';
     let sessionAttributes = {};
     const shouldEndSession = false;
@@ -157,9 +158,9 @@ function currentWeight(intent, session, callback) {
 
 //saves a new Patient into the table
 function newPatient(callback) {
-    var params = {
+    let params = {
         Item : {
-            "id" : uuid.v1(),
+            "id" : puser,
             "name" : pname,
             "weight" : pweight,
             "time_stamp" : ptime
@@ -228,14 +229,16 @@ function diarrhea(intent, session, callback) {
  * Called when the session starts.
  */
 function onSessionStarted(sessionStartedRequest, session) {
-    console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, 
+    
+    =${session.userId}`);
 }
 
 /**
  * Called when the user launches the skill without specifying what they want.
  */
 function onLaunch(launchRequest, session, callback) {
-    console.log(`onLaunch requestId=${launchRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log(`onLaunch requestId=${launchRequest.requestId}, userId=${session.user.userId}`);
 
     // Dispatch to your skill's launch.
     getWelcomeResponse(callback);
@@ -245,7 +248,7 @@ function onLaunch(launchRequest, session, callback) {
  * Called when the user specifies an intent for this skill.
  */
 function onIntent(intentRequest, session, callback) {
-    console.log(`onIntent requestId=${intentRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log(`onIntent requestId=${intentRequest.requestId}, userId=${session.user.userId}`);
 
     const intent = intentRequest.intent;
     const intentName = intentRequest.intent.name;
@@ -277,7 +280,7 @@ function onIntent(intentRequest, session, callback) {
  * Is not called when the skill returns shouldEndSession=true.
  */
 function onSessionEnded(sessionEndedRequest, session) {
-    console.log(`onSessionEnded requestId=${sessionEndedRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log(`onSessionEnded requestId=${sessionEndedRequest.requestId}, userId=${session.user.userId}`);
     // Add cleanup logic here
 }
 
