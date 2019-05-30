@@ -12,7 +12,6 @@
 const AWS = require('aws-sdk');
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const https = require('https');
-const uuid = require('uuid');
 const iotData = new AWS.IotData({ endpoint: "us-east-1:609746199304" });
 //for persistent attributes
 //const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
@@ -85,6 +84,7 @@ function createNameAttributes(patientName) {
         patientName,
     };
 }
+//FOR WEIGHT OUTPUT NOT IN USE ATM
 function createWeightAttributes(userWeight) {
     return {
         userWeight,
@@ -146,7 +146,8 @@ function currentWeight(intent, session, callback) {
     if (weight) {
         const weightValue = weight.value;
         pweight = weightValue;
-        ptime = Date();
+        let date = new Date();
+        ptime = date.getTime();
         sessionAttributes += createWeightAttributes(weightValue);
         speechOutput = `Thank you ${pname} I saved your current weight. Do you need anything else? `; 
         newPatient(callback);
@@ -158,7 +159,6 @@ function currentWeight(intent, session, callback) {
     callback(sessionAttributes,
          buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
 }
-
 
 //saves a new Patient into the table
 function newPatient(callback) {
@@ -231,9 +231,8 @@ function getLastWeight(intent, session, callback) {
     let shouldEndSession = false;
     let speechOutput = '';
     
-    if (session.attributes) {
-        lastWeight = session.attributes.weightValue; // ------
-    }
+    lastWeight = DynamoDBQuery(hash_key=slug, ScanIndexForward=True, limit=1) ////_________
+        
 
     if (lastWeight) {
         speechOutput = `Your last weight was ${lastWeight}.`;
