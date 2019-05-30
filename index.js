@@ -231,7 +231,7 @@ function getLastWeight(intent, session, callback) {
     let shouldEndSession = false;
     let speechOutput = '';
     
-    lastWeight = DynamoDBQuery(hash_key=slug, ScanIndexForward=True, limit=1) ////_________
+    lastWeight = DynamoDBQuery(hash_key=time_stamp, ScanIndexForward=True, limit=1) ////_________
         
 
     if (lastWeight) {
@@ -240,9 +240,6 @@ function getLastWeight(intent, session, callback) {
     } else {
         speechOutput = "You did not input any weight yet.";
     }
-    // Setting repromptText to null signifies that we do not want to reprompt the user.
-    // If the user does not respond or says something that is not understood, the session
-    // will end.
     callback(sessionAttributes,
          buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
 }
