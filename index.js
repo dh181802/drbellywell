@@ -80,12 +80,6 @@ function handleSessionEndRequest(callback) {
     callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
 }
 
-function createFavoriteColorAttributes(favoriteColor) {
-    return {
-        favoriteColor,
-    };
-}
-
 function createNameAttributes(patientName) {
     return {
         patientName,
@@ -94,12 +88,6 @@ function createNameAttributes(patientName) {
 function createWeightAttributes(userWeight) {
     return {
         userWeight,
-    };
-}
-
-function createTimestamp(timeStamp) {
-    return {
-        timeStamp,
     };
 }
 
@@ -211,7 +199,6 @@ function getNameFromSession(intent, session, callback) {
 
 /*
 diarrhea funktion für den output, wird unten aufgerufen und mit ihrem intent (diarrhiaIntent) "verknüpft"
-
 */
 function diarrhea(intent, session, callback) {
     const cardTitle = intent.name;
@@ -332,19 +319,3 @@ exports.handler = (event, context, callback) => {
         callback(err);
     }
 };
-
-function avg(callback) {
-    var table = "patient";
-    var name = "Larry";
-    var params = {
-        TableName: table,
-        Key:{
-            "name": name
-        }
-    };
-
-
-
-
-
-}
