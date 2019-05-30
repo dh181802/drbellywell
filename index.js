@@ -211,7 +211,7 @@ function diarrhea(intent, session, callback) {
 
     let repromptText = '';
     let sessionAttributes = {};
-    const shouldEndSession = false;
+    let shouldEndSession = false;
     let speechOutput = '';
     let yesOrNo;
 
@@ -219,22 +219,20 @@ function diarrhea(intent, session, callback) {
     the condition of having at least three loose, liquid, or watery bowel movements each day. It often lasts for a few days and can 
     result in dehydration due to fluid loss. Signs of dehydration often begin with loss of the normal stretchiness of the skin and irritable behaviour. `; 
     
-
-    
     callback(sessionAttributes,
          buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
 }
 
-//user can ask for the last weight input
+//user can ask for the last weight input NOT WORKING YET
 function getLastWeight(intent, session, callback) {
     let lastWeight;
     const repromptText = null;
     const sessionAttributes = {};
     let shouldEndSession = false;
     let speechOutput = '';
-
+    
     if (session.attributes) {
-        lastWeight = session.attributes.weightValue;
+        lastWeight = session.attributes.weightValue; // ------
     }
 
     if (lastWeight) {
@@ -243,13 +241,6 @@ function getLastWeight(intent, session, callback) {
     } else {
         speechOutput = "You did not input any weight yet.";
     }
-    
-    
-    
-    
-    
-    
-    
     // Setting repromptText to null signifies that we do not want to reprompt the user.
     // If the user does not respond or says something that is not understood, the session
     // will end.
