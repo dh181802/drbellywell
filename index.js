@@ -109,6 +109,7 @@ function setNameInSession(intent, session, callback) {
     if (strName) {
         const nameValue = strName.value;
         sessionAttributes = createNameAttributes(nameValue);
+        newPatient(callback);
         speechOutput = `Welcome ${nameValue}. You can ask me ` +
             "things about your health!";
         repromptText = "You can ask me things about your health";
@@ -230,12 +231,23 @@ function getLastWeight(intent, session, callback) {
     const sessionAttributes = {};
     let shouldEndSession = false;
     let speechOutput = '';
+   //_________________________ 
+    lastWeight = {
+    TableName: "healthdata",
+    IndexName: "session_id",
+    ExpressionAttributeNames: {
+        "#weight":"weight"
+        },
+    ExpressionAttributeValues: {
+        ":weightValue": weight
+        }
+    };
+dynamoDB.query(lastWeight,callback);
+    //________________________
     
-    lastWeight = DynamoDBQuery(hash_key=time_stamp, ScanIndexForward=True, limit=1) ////_________
         
-
     if (lastWeight) {
-        speechOutput = `Your last weight was ${lastWeight}.`;
+        speechOutput = `Your last weight was ${lastWeight} kilogram.`;
         shouldEndSession = false;
     } else {
         speechOutput = "You did not input any weight yet.";
@@ -244,7 +256,7 @@ function getLastWeight(intent, session, callback) {
          buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
 }
 
-
+  
 
 
 // --------------- Events -----------------------
