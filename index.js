@@ -13,10 +13,10 @@ const AWS = require('aws-sdk');
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const https = require('https');
 const iotData = new AWS.IotData({ endpoint: "us-east-1:609746199304" });
-//for persistent attributes
-//const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
-//const dynamoDbPersistenceAdapter = new DynamoDbPersistenceAdapter({ tableName : 'healthdata' })
-
+let yesOrNo= NaN;
+let digProbYN = NaN;
+let drinkingRecYN= NaN;
+let diarrheaYN = NaN;
 let puser, pname, pweight, ptime, psession;
 
 
@@ -90,9 +90,6 @@ function createWeightAttributes(userWeight) {
         userWeight,
     };
 }
-
-
-
 
 //stores username
 function setNameInSession(intent, session, callback) {
@@ -204,26 +201,6 @@ function getNameFromSession(intent, session, callback) {
          buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
 }
 
-/*
-diarrhea funktion für den output, wird unten aufgerufen und mit ihrem intent (diarrhiaIntent) "verknüpft"
-*/
-function diarrhea(intent, session, callback) {
-    const cardTitle = intent.name;
-
-    let repromptText = '';
-    let sessionAttributes = {};
-    let shouldEndSession = false;
-    let speechOutput = '';
-    let yesOrNo;
-
-    speechOutput = `Diarrhea, also spelled diarrhoea, is 
-    the condition of having at least three loose, liquid, or watery bowel movements each day. It often lasts for a few days and can 
-    result in dehydration due to fluid loss. Signs of dehydration often begin with loss of the normal stretchiness of the skin and irritable behaviour. `; 
-    
-    callback(sessionAttributes,
-         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
-}
-
 //user can ask for the last weight input NOT WORKING YET
 function getLastWeight(intent, session, callback) {
     let lastWeight;
@@ -231,34 +208,308 @@ function getLastWeight(intent, session, callback) {
     const sessionAttributes = {};
     let shouldEndSession = false;
     let speechOutput = '';
-   //_________________________ 
-    lastWeight = {
-    TableName: "healthdata",
-    IndexName: "session_id",
-    ExpressionAttributeNames: {
-        "#weight":"weight"
-        },
-    ExpressionAttributeValues: {
-        ":weightValue": weight
-        }
-    };
-dynamoDB.query(lastWeight,callback);
-    //________________________
+
     
+    
+    let params = {
+    TableName: "healthdata",
+    KeyConditionExpression: "id = :puser",
+    ExpressionAttributeValues: {
+        ":weight": pweight
+    },
+    ScanIndexForward: "false",
+    Limit: 1
+    };
+
+    lastWeight = params;
+//_______________________________________________________________
         
     if (lastWeight) {
-        speechOutput = `Your last weight was ${lastWeight} kilogram.`;
-        shouldEndSession = false;
+        speechOutput = `Your last weight was ${lastWeight} kilogram. Can I help you with anything else?`;
     } else {
-        speechOutput = "You did not input any weight yet.";
+        speechOutput = "You did not input any weight yet. Can I help you with anything else?";
     }
     callback(sessionAttributes,
          buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
 }
 
+function diarrhea(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
   
 
+    speechOutput = `Do you have problems with diarrhea ${pname}?`; 
 
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+    diarrheaYN = true;
+}
+
+function diarrheaProblem(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+
+    speechOutput = `After gastric bypass surgery, diarrhea after food intake can most likely be caused by dumping syndrome. Did the problem occur in the first thirty minutes to three hours after your last food intake?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+     yesOrNo = true;    
+    
+}
+
+function dumpingProblem(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+
+    speechOutput = `This might be early dumping, which is mostly caused by large amounts of food that have been eaten too fast and move to quickly undigested from the stomach into the small bowel. When it occurs two-three hours after food intake, it might be late dumping which is mostly caused by high amounts of sugar and a resulting hyper- and then hypoglycemia. Please check your diet and contact your dietitian for a nutrition counselling. If it is not caused by dumping syndrome it might be an infection or can be caused by other reasons from the surgery, in which case you should see your doctor. 
+    Can I help you with anything else?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+    yesOrNo = NaN; 
+    diarrheaYN = NaN;
+    
+}
+
+function noDumpingProblem(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+
+    speechOutput = `If the problem is not caused by your last food intake this might be an infection or can be caused by other reasons from the surgery, in which case you should see your doctor. 
+    Can I help you with anything else?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+    yesOrNo = NaN; 
+    diarrheaYN = NaN;
+    
+}
+
+
+/*
+Für denn fall, dass Intent falsch verstanden wurde: exitTree funktion 
+
+*/
+
+function exitTree(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+
+    speechOutput = `Can I help you with anything else?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+    yesOrNo = NaN; 
+    diarrheaYN = NaN;
+    digProbYN = NaN;
+    drinkingRecYN = NaN;
+}
+
+/*
+Für denn fall, dass Intent falsch verstanden wurde: exitTree funktion 
+
+*/
+
+function requestTree(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+
+    speechOutput = `How may I help you?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+    yesOrNo = NaN; 
+    diarrheaYN = NaN;
+    digProbYN = NaN;
+    drinkingRecYN = NaN;
+}
+
+
+/*
+drinking recommendations Baum, funktionen für den output, werden unten aufgerufen und mit ihrem intent (drinkingReccomendationsIntent) "verknüpft" --, 
+
+*/
+
+ function  drinkingRec1(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `Do you want to know about your drinking recommendations, ${pname}?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+    
+      drinkingRecYN = true;
+  
+}
+
+ function  drinkingRec2(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `It is important that you at least manage to drink 1.5 Liters a day, if your dietitian didn´t give you an individualized amount of drinking quantity. Recommended are calorie free drinks, especially water and unsweetened tea. Try to drink small sips at a time and have a drinking free period of 30 minutes before and after food intake, especially during the first weeks after surgery. Drinks that contain gas, alcohol or high amounts of sugar shall be avoided, particularly in the first months after surgery. Should I repeat this information for you?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+}
+
+function noDrinkingRec(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `Howelse can I help you, ${pname}?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+         
+  drinkingRecYN = NaN;
+  
+  
+}
+
+
+/*
+allgemeiner digestive problems Baum, werden unten aufgerufen und mit ihrem intent (digestiveProblemsIntent) "verknüpft" --, 
+
+*/
+
+function digestiveProblems(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `Do you have digestive Problems ?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+    
+    digProbYN = true
+  
+}
+
+function yesProblem(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `Have you already eaten today ${pname}?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+    
+    yesOrNo = true;   
+  
+}
+
+function yesEaten(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = ` So you have eaten and have a somache ache now. Try not to eat fast and only small portions next time. Can I help you with anything else?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+    
+      yesOrNo= NaN;
+      digProbYN = NaN;
+  
+}
+
+function noEaten(intent, session, callback) {
+    const cardTitle = intent.name;
+
+    let repromptText = '';
+    let sessionAttributes = {};
+    const shouldEndSession = false;
+    let speechOutput = '';
+  
+    
+    speechOutput = `Maybe you shouls eat something ${pname}. Can I help you with anything else?`; 
+
+    
+    callback(sessionAttributes,
+         buildSpeechletResponse(cardTitle, speechOutput, speechOutput, shouldEndSession));
+    
+      yesOrNo= NaN;
+      digProbYN = NaN;
+  
+}
+ 
 // --------------- Events -----------------------
 
 /**
@@ -309,6 +560,36 @@ function onIntent(intentRequest, session, callback) {
         getWelcomeResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
+    }else if (intentName === 'diarrheaIntent') {
+        diarrhea(intent, session, callback);
+    } else if (intentName === 'AMAZON.YesIntent' && diarrheaYN === true && isNaN(yesOrNo)) {
+        diarrheaProblem(intent, session, callback);
+    } else if (intentName === 'AMAZON.NoIntent' && diarrheaYN === true && isNaN(yesOrNo)) {
+        exitTree(intent, session, callback);
+    } else if (intentName === 'AMAZON.YesIntent' && diarrheaYN === true && yesOrNo === true) {
+       dumpingProblem(intent, session, callback);
+    }  else if (intentName === 'AMAZON.NoIntent' && diarrheaYN === true && yesOrNo === true) {
+       noDumpingProblem(intent, session, callback);
+    }else if (intentName === 'digestiveProblemsIntent') {
+        digestiveProblems(intent, session, callback);
+    } else if (intentName === 'drinkingRecommendationsIntent') {
+        drinkingRec1(intent, session, callback);
+    } else if (intentName === 'AMAZON.YesIntent' && drinkingRecYN === true) {
+        drinkingRec2(intent, session, callback);
+    } else if (intentName === 'AMAZON.NoIntent' && drinkingRecYN === true) {
+        noDrinkingRec(intent, session, callback);
+    }else if (intentName === 'AMAZON.YesIntent' && digProbYN === true && isNaN(yesOrNo)) {
+       yesProblem(intent, session, callback);
+    }else if (intentName === 'AMAZON.NoIntent'&& digProbYN === true && isNaN(yesOrNo)) {
+        exitTree(intent, session, callback);
+    }else if (intentName === 'AMAZON.YesIntent' && digProbYN === true && yesOrNo === true ) {
+       yesEaten(intent, session, callback);
+    } else if (intentName === 'AMAZON.NoIntent' && digProbYN === true && yesOrNo === true ) {
+       noEaten(intent, session, callback);
+    }  else if (intentName === 'AMAZON.NoIntent' && isNaN(drinkingRecYN) && isNaN(digProbYN) && isNaN(diarrheaYN) && isNaN(yesOrNo)) {
+        handleSessionEndRequest(callback);
+    }  else if (intentName === 'AMAZON.YesIntent' && isNaN(drinkingRecYN) && isNaN(digProbYN) && isNaN(diarrheaYN) && isNaN(yesOrNo)) {
+       requestTree(intent, session, callback);
     } else {
         throw new Error('Invalid intent');
     }
