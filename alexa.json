@@ -1,0 +1,162 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "belly well",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "MyNameIs",
+                    "slots": [
+                        {
+                            "name": "strname",
+                            "type": "AMAZON.US_FIRST_NAME"
+                        }
+                    ],
+                    "samples": [
+                        "my name is {strname}"
+                    ]
+                },
+                {
+                    "name": "WhatsMyNameIntent",
+                    "slots": [],
+                    "samples": [
+                        "who am i",
+                        "i'm drunk and forgot my name"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "WeightIntent",
+                    "slots": [
+                        {
+                            "name": "patientWeight",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "i have {patientWeight} kilo gram",
+                        "todays weight is {patientWeight} kilograms",
+                        "today i weigh {patientWeight} kilo",
+                        "i weigh {patientWeight} kilogram",
+                        "my current weight is {patientWeight} kilos"
+                    ]
+                },
+                {
+                    "name": "saveWeightIntent",
+                    "slots": [],
+                    "samples": [
+                        "save my weight",
+                        "record my weight",
+                        "weight input"
+                    ]
+                },
+                {
+                    "name": "LastWeightIntent",
+                    "slots": [],
+                    "samples": [
+                        "what weight did i save last time",
+                        "what was my weight yesterday",
+                        "what was my last weight input",
+                        "how much did i weigh last time",
+                        "what was my last weight"
+                    ]
+                },
+                {
+                    "name": "diarrheaIntent",
+                    "slots": [],
+                    "samples": [
+                        "diarrhea",
+                        "I have diarrhea",
+                        "tell me about diarrhea after food intake",
+                        "tell me about diarrhea"
+                    ]
+                },
+                {
+                    "name": "digestiveProblemsIntent",
+                    "slots": [],
+                    "samples": [
+                        "I have a belly ache",
+                        "stomache ache",
+                        "tummyache"
+                    ]
+                },
+                {
+                    "name": "drinkingRecommendationsIntent",
+                    "slots": [],
+                    "samples": [
+                        "Tell me about my drinking recommendations",
+                        "drinking recommendations",
+                        "how should I drink",
+                        "drinking"
+                    ]
+                },
+                {
+                    "name": "softdrinksIntent",
+                    "slots": [],
+                    "samples": [
+                        "softdrinks",
+                        "softdrink",
+                        "fanta",
+                        "lemonade",
+                        "cola",
+                        "sprite",
+                        "almdudler",
+                        "nothing",
+                        "hot chocolate",
+                        "red bull",
+                        "energy drink"
+                    ]
+                },
+                {
+                    "name": "alcoholIntent",
+                    "slots": [],
+                    "samples": [
+                        "alcohol",
+                        "beer",
+                        "wodka",
+                        "tequilla"
+                    ]
+                },
+                {
+                    "name": "gooddrinksIntent",
+                    "slots": [],
+                    "samples": [
+                        "water",
+                        "tee"
+                    ]
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": [
+                        "hell yeah",
+                        "Yep",
+                        "Yes"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": [
+                        "nope",
+                        "Hell naw",
+                        "No"
+                    ]
+                }
+            ],
+            "types": []
+        }
+    }
+}
